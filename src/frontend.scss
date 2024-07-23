@@ -1,0 +1,19 @@
+.pricing-table-frontend {
+    background-color: #ebebeb;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.03);
+    border: 1px solid #dbdbdb;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 35px;
+}
+
+.previous-price {
+    text-decoration: line-through;
+    margin-right: 10px;
+}
+
+.current-price {
+    font-weight: bold;
+}

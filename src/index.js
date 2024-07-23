@@ -1,5 +1,5 @@
 import "./index.scss";
-import { InspectorControls, RichText } from '@wordpress/block-editor';
+import { InspectorControls, RichText, BlockControls, AlignmentToolbar } from '@wordpress/block-editor';
 import { Button, PanelBody, SelectControl, TextControl, ToggleControl } from "@wordpress/components";
 
 wp.blocks.registerBlockType('my-plugin/pricing-table', {
@@ -10,55 +10,39 @@ wp.blocks.registerBlockType('my-plugin/pricing-table', {
         icon: {type: "string", default: "smiley"},
         title: {type: "string", default: "Package Name"},
         description: {type: "string", default: "Auctor condimentum vero, solutauld hilvil similique, nisl proin augue? Accumsan interdum etiam"},
-        
-        currentPrice: {
-            type: 'string',
-            default: '39.99',
-        },
-        currency: {
-            type: 'string',
-            default: '$',
-        },
-        hasDiscount: {
-            type: 'boolean',
-            default: false,
-        },
-        discountPrice: {
-            type: 'string',
-            default: '',
-        },
-
-
-        button: {type: "string" , default: "BUY NOW"}
+        currentPrice: {type: 'string', default: '39.99'},
+        currency: {type: 'string',default: '$'},
+        hasDiscount: {type: 'boolean', default: false},
+        discountPrice: {type: 'string', default: ''},
+        button: {type: "string" , default: "BUY NOW"},
+        theAlignment: {type: "string", default: "center"}
     },
     description: "Create your best pricing table.",
     edit: EditComponent,
-    save: function () {
-        return (
-        <>
-            <h3>H3 on the frontend.</h3>
-            <h5>H5 on the frontend.</h5>
-        </>
-        )
+    save: function (props) {
+        return null;
     }
 });
 
 function EditComponent(props) {
 
-    function handleTitleChange(value) {
-        props.setAttributes({ title: value })
+    function handleTitleChange(newValue) {
+        props.setAttributes({ title: newValue })
     }
 
-    function handleDescriptionChange(value) {
-        props.setAttributes({ description: value })
+    function handleDescriptionChange(newValue) {
+        props.setAttributes({ description: newValue })
     }
 
-    function handleButtonChange(value) {
-        props.setAttributes({ button: value })
+    function handleButtonChange(newValue) {
+        props.setAttributes({ button: newValue })
     }
 
     return (
         <div className="pricing-table-edit-block">
+            <BlockControls>
+                <AlignmentToolbar value={props.attributes.theAlignment} onChange={x => props.setAttributes({theAlignment: x})} />
+            </BlockControls>
             <InspectorControls>
                 <PanelBody title="Icon Settings">
                     <SelectControl
