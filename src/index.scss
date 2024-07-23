@@ -1,0 +1,37 @@
+.pricing-table-edit-block {
+    width: 25%;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #d6d6d6;
+    background-color: #f1f1f1;
+
+    .icon-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .dashicons {
+        font-size: 40px;
+    }
+}
+.dashicons {
+    font-family: "dashicons";
+    display: inline-block;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 1;
+    vertical-align: middle;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.previous-price {
+    text-decoration: line-through;
+    margin-right: 10px;
+}
+
+.current-price {
+    font-weight: bold;
+}
