@@ -12,7 +12,7 @@ divPricingTable.forEach(block => {
 
 function PricingTableFrontend(props) {
     return (
-        <div className="pricing-table-frontend">
+        <div className="pricing-table-frontend" style={{backgroundColor: props.bgColor, textAlign: props.theAlignment}}>
             <span className={`dashicons dashicons-${props.icon}`}></span>
             <h3>{props.title}</h3>
             <p>{props.description}</p>

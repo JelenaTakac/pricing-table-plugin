@@ -1,6 +1,7 @@
 import "./index.scss";
-import { InspectorControls, RichText, BlockControls, AlignmentToolbar } from '@wordpress/block-editor';
-import { Button, PanelBody, SelectControl, TextControl, ToggleControl } from "@wordpress/components";
+import { InspectorControls, RichText, BlockControls, AlignmentToolbar } from "@wordpress/block-editor";
+import { Button, PanelBody, PanelRow, SelectControl, TextControl, ToggleControl } from "@wordpress/components";
+import {ChromePicker} from "react-color";
 
 wp.blocks.registerBlockType('my-plugin/pricing-table', {
     title: 'Pricing Table',
@@ -8,13 +9,14 @@ wp.blocks.registerBlockType('my-plugin/pricing-table', {
     category: 'common',
     attributes: {
         icon: {type: "string", default: "smiley"},
-        title: {type: "string", default: "Package Name"},
-        description: {type: "string", default: "Auctor condimentum vero, solutauld hilvil similique, nisl proin augue? Accumsan interdum etiam"},
-        currentPrice: {type: 'string', default: '39.99'},
-        currency: {type: 'string',default: '$'},
-        hasDiscount: {type: 'boolean', default: false},
-        discountPrice: {type: 'string', default: ''},
-        button: {type: "string" , default: "BUY NOW"},
+        title: {type: "string", default: ""},
+        description: {type: "string", default: ""},
+        currentPrice: {type: "string", default: "39.99"},
+        currency: {type: "string",default: "$"},
+        hasDiscount: {type: "boolean", default: false},
+        discountPrice: {type: "string", default: ""},
+        button: {type: "string" , default: ""},
+        bgColor: {type: "string", default: "#ebebeb"},
         theAlignment: {type: "string", default: "center"}
     },
     description: "Create your best pricing table.",
@@ -39,19 +41,19 @@ function EditComponent(props) {
     }
 
     return (
-        <div className="pricing-table-edit-block">
+        <div className="pricing-table-edit-block" style={{backgroundColor: props.attributes.bgColor}}>
             <BlockControls>
                 <AlignmentToolbar value={props.attributes.theAlignment} onChange={x => props.setAttributes({theAlignment: x})} />
             </BlockControls>
             <InspectorControls>
                 <PanelBody title="Icon Settings">
                     <SelectControl
-                        label='Icon'
+                        label="Icon"
                         value={props.attributes.icon}
                         options={[
-                            { label: 'Smiley', value: 'smiley' },
-                            { label: 'Heart', value: 'heart' },
-                            { label: 'Lightbulb', value: 'lightbulb' },
+                            { label: "Smiley", value: "smiley" },
+                            { label: "Heart", value: "heart" },
+                            { label: "Lightbulb", value: "lightbulb" },
                         ]}
                         onChange={(newIcon) => props.setAttributes({ icon: newIcon })}
                     />
@@ -83,15 +85,21 @@ function EditComponent(props) {
                     )}
                 </PanelBody>
 
+                <PanelBody title="Background Color" initialOpen={true}>
+                    <PanelRow>
+                        <ChromePicker color={props.attributes.bgColor} onChangeComplete={x => props.setAttributes({bgColor: x.hex})} disableAlpha={true}/>
+                    </PanelRow>
+                </PanelBody>
+
             </InspectorControls>
 
             <div className="icon-container">
                 <span className={`dashicons dashicons-${props.attributes.icon}`} />
             </div>
             {/* <h2>Hello from Edit block</h2> */}
-            <RichText allowedFormats={["core/bold", "core/italic"]} tagName="h3" className={`headline`} onChange={handleTitleChange} value={props.attributes.title}/>
+            <RichText allowedFormats={["core/bold", "core/italic"]} tagName="h3" className={`headline`} onChange={handleTitleChange} value={props.attributes.title} placeholder="Card Title"/>
 
-            <RichText allowedFormats={[]} tagName="p" className={`description`} onChange={handleDescriptionChange} value={props.attributes.description}/>
+            <RichText allowedFormats={[]} tagName="p" className={`description`} onChange={handleDescriptionChange} value={props.attributes.description} placeholder="Card Description"/>
 
 
             <div className="pricing-table-price">
@@ -106,7 +114,7 @@ function EditComponent(props) {
             </div>
 
             <Button variant="primary">
-                <RichText allowedFormats={["core/bold", "core/italic"]} className={`btn`} value={props.attributes.button} onChange={handleButtonChange}/>
+                <RichText allowedFormats={["core/bold", "core/italic"]} className={`btn`} value={props.attributes.button} onChange={handleButtonChange} placeholder="BUY"/>
             </Button>
             
         </div>
