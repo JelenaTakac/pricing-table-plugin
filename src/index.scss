@@ -7,6 +7,7 @@
 
     .card {
         border: 1px solid #ddd;
+        border-radius: 25px;
         padding: 15px;
         background: #fff;
         display: flex;
@@ -20,8 +21,9 @@
         }
 
         .dashicons {
-            font-size: 24px;
-            margin-bottom: 10px;
+            // font-size: 24px;
+            // margin-bottom: 10px;
+            scale: 1.5;
         }
 
         h3 {
@@ -30,6 +32,12 @@
 
         p {
             margin-bottom: 15px;
+        }
+
+        .card-icon {
+            display: flex;
+            padding: 20px;
+            background-color: #ffffff47;
         }
 
         .card-features {
@@ -46,6 +54,10 @@
 
             .current-price {
                 font-weight: bold;
+            }
+
+            .payment-period {
+                font-size: 16px;
             }
         }
 

@@ -16,8 +16,9 @@
         text-align: center;
 
         .dashicons {
-            font-size: 24px;
-            margin-bottom: 10px;
+            // font-size: 24px;
+            // margin-bottom: 10px;
+            scale: 1.5;
         }
 
         h3 {
@@ -26,6 +27,17 @@
 
         p {
             margin-bottom: 15px;
+        }
+
+        .card-icon {
+            display: flex;
+            padding: 20px;
+            background-color: #ffffff47;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 28px;
         }
 
         .card-features {
@@ -42,6 +54,7 @@
 
             .current-price {
                 font-weight: bold;
+                font-size: 30px;
             }
         }
 

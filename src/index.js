@@ -9,7 +9,7 @@ wp.blocks.registerBlockType('my-plugin/pricing-table', {
     icon: 'table-col-after',
     category: 'common',
     attributes: {
-        blockTitle: { type: "string", default: "Get Your Perfect Edition Plans" },
+        blockTitle: { type: "string", default: "Your Pricing Table Title" },
         cards: {
             type: "array",
             default: [
@@ -19,11 +19,12 @@ wp.blocks.registerBlockType('my-plugin/pricing-table', {
                     description: "",
                     currentPrice: "39.99",
                     currency: "",
+                    paymentPeriod: "",
                     hasDiscount: false,
                     discountPrice: "",
                     button: "",
                     bgColor: "#ebebeb", 
-                    features: ["free"]
+                    features: ["Feature 1"]
                 },
             ],
         },
@@ -53,11 +54,12 @@ function EditComponent(props) {
             description: "",
             currentPrice: "39.99",
             currency: "",
+            paymentPeriod: "",
             hasDiscount: false,
             discountPrice: "",
             button: "",
-            bgColor: "#ffffff",
-            features: ["free"]
+            bgColor: "#ebebeb",
+            features: ["Feature 1"]
         };
         setAttributes({ cards: [...attributes.cards, newCard] });
         setSelectedCardIndex(attributes.cards.length); // Select the newly added card
@@ -69,8 +71,6 @@ function EditComponent(props) {
         setSelectedCardIndex(null); // Deselect card if it was removed
     };
     
-    // /////////////////////////////////
-
     const addFeature = (index) => {
         const updatedCards = [...attributes.cards];
         updatedCards[index].features.push(""); // Add an empty feature string
@@ -89,8 +89,6 @@ function EditComponent(props) {
         setAttributes({ cards: updatedCards });
     };
 
-
-    // /////////////////////////
 
     return (
         <div className="pricing-table-edit-block">
@@ -137,33 +135,6 @@ function EditComponent(props) {
                             value={attributes.cards[selectedCardIndex].description}
                             onChange={(newDescription) => handleCardChange({ ...attributes.cards[selectedCardIndex], description: newDescription }, selectedCardIndex)}
                         />
-                        <TextControl
-                            label="Current Price"
-                            value={attributes.cards[selectedCardIndex].currentPrice}
-                            onChange={(newPrice) => handleCardChange({ ...attributes.cards[selectedCardIndex], currentPrice: newPrice }, selectedCardIndex)}
-                        />
-                        <TextControl
-                            label="Currency"
-                            value={attributes.cards[selectedCardIndex].currency}
-                            onChange={(newCurrency) => handleCardChange({ ...attributes.cards[selectedCardIndex], currency: newCurrency }, selectedCardIndex)}
-                        />
-                        <ToggleControl
-                            label="Has Discount"
-                            checked={attributes.cards[selectedCardIndex].hasDiscount}
-                            onChange={(newHasDiscount) => handleCardChange({ ...attributes.cards[selectedCardIndex], hasDiscount: newHasDiscount }, selectedCardIndex)}
-                        />
-                        {attributes.cards[selectedCardIndex].hasDiscount && (
-                            <TextControl
-                                label="Discount Price"
-                                value={attributes.cards[selectedCardIndex].discountPrice}
-                                onChange={(newDiscountPrice) => handleCardChange({ ...attributes.cards[selectedCardIndex], discountPrice: newDiscountPrice }, selectedCardIndex)}
-                            />
-                        )}
-                        <TextControl
-                            label="Button Text"
-                            value={attributes.cards[selectedCardIndex].button}
-                            onChange={(newButton) => handleCardChange({ ...attributes.cards[selectedCardIndex], button: newButton }, selectedCardIndex)}
-                        />
 
                         <PanelBody title="Features" initialOpen={false}>
                             {attributes.cards[selectedCardIndex].features.map((feature, featureIndex) => (
@@ -183,14 +154,53 @@ function EditComponent(props) {
                             </Button>
                         </PanelBody>
 
-                        <PanelRow>
-                            <ChromePicker
-                                color={attributes.cards[selectedCardIndex].bgColor}
-                                onChangeComplete={(color) => handleCardChange({ ...attributes.cards[selectedCardIndex], bgColor: color.hex }, selectedCardIndex)}
-                                disableAlpha
+                        <PanelBody title="Price" initialOpen={false}>
+                            <TextControl
+                                label="Current Price"
+                                value={attributes.cards[selectedCardIndex].currentPrice}
+                                onChange={(newPrice) => handleCardChange({ ...attributes.cards[selectedCardIndex], currentPrice: newPrice }, selectedCardIndex)}
+                            />
+                            <TextControl
+                                label="Currency"
+                                value={attributes.cards[selectedCardIndex].currency}
+                                onChange={(newCurrency) => handleCardChange({ ...attributes.cards[selectedCardIndex], currency: newCurrency }, selectedCardIndex)}
                                 />
-                        </PanelRow>
+                            <TextControl
+                                label="Payment Period"
+                                value={attributes.cards[selectedCardIndex].paymentPeriod}
+                                onChange={(newPeriod) => handleCardChange({ ...attributes.cards[selectedCardIndex], paymentPeriod: newPeriod }, selectedCardIndex)}
+                                />
+                            <ToggleControl
+                                label="Has Discount"
+                                checked={attributes.cards[selectedCardIndex].hasDiscount}
+                                onChange={(newHasDiscount) => handleCardChange({ ...attributes.cards[selectedCardIndex], hasDiscount: newHasDiscount }, selectedCardIndex)}
+                                />
+                            {attributes.cards[selectedCardIndex].hasDiscount && (
+                                <TextControl
+                                label="Discount Price"
+                                value={attributes.cards[selectedCardIndex].discountPrice}
+                                onChange={(newDiscountPrice) => handleCardChange({ ...attributes.cards[selectedCardIndex], discountPrice: newDiscountPrice }, selectedCardIndex)}
+                                />
+                            )}
+                        </PanelBody>
 
+                        <PanelBody title="Background Color" initialOpen={false}>
+                            <PanelRow>
+                                <ChromePicker
+                                    color={attributes.cards[selectedCardIndex].bgColor}
+                                    onChangeComplete={(color) => handleCardChange({ ...attributes.cards[selectedCardIndex], bgColor: color.hex }, selectedCardIndex)}
+                                    disableAlpha
+                                    />
+                            </PanelRow>
+                        </PanelBody>
+
+                        <PanelBody title="Button Text" initialOpen={false}>
+                            <TextControl
+                                label="Button Text"
+                                value={attributes.cards[selectedCardIndex].button}
+                                onChange={(newButton) => handleCardChange({ ...attributes.cards[selectedCardIndex], button: newButton }, selectedCardIndex)}
+                            />
+                        </PanelBody>
                         
                     </PanelBody>
                 )}
@@ -216,7 +226,7 @@ function EditComponent(props) {
                             style={{ backgroundColor: card.bgColor }}
                             onClick={() => setSelectedCardIndex(index)}
                         >
-                            <span className={`dashicons dashicons-${card.icon}`}></span>
+                            <div className="card-icon"><span className={`dashicons dashicons-${card.icon}`}></span></div>
                             <h3>{card.title}</h3>
                             <p>{card.description}</p>
                             <ul className="card-features">
@@ -233,6 +243,7 @@ function EditComponent(props) {
                                 ) : (
                                     <span className="current-price">{card.currency}{card.currentPrice}</span>
                                 )}
+                                <p className="payment-period">Per {card.paymentPeriod}</p>
                             </div>
                             <button className="btn">{card.button}</button>
                         </div>

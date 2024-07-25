@@ -17,8 +17,8 @@ function PricingTableFrontend(props) {
             <div className="cards-container">
                 {props.cards.map((card, index) => (
                     <div key={index} className="card" style={{backgroundColor: card.bgColor}}>
-                        <span className={`dashicons dashicons-${card.icon}`}></span>
-                        <h4>{card.title}</h4>
+                        <div className="card-icon"><span className={`dashicons dashicons-${card.icon}`}></span></div>
+                        <h4 className="card-title">{card.title}</h4>
                         <p>{card.description}</p>
                         <ul className="card-features">
                             {card.features.map((feature, featureIndex) => (
@@ -34,6 +34,7 @@ function PricingTableFrontend(props) {
                             ) : (
                                 <span className="current-price">{card.currency}{card.currentPrice}</span>
                             )}
+                            <p className="payment-period">Per {card.paymentPeriod}</p>
                         </div>
                         <button className="btn">{card.button}</button>
                     </div>
