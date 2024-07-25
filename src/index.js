@@ -23,6 +23,7 @@ wp.blocks.registerBlockType('my-plugin/pricing-table', {
                     discountPrice: "",
                     button: "",
                     bgColor: "#ebebeb", 
+                    features: ["free"]
                 },
             ],
         },
@@ -30,7 +31,7 @@ wp.blocks.registerBlockType('my-plugin/pricing-table', {
     },
     description: "Create your best pricing table.",
     edit: EditComponent,
-    save: function () {
+    save: function (props) {
         return null;
     }
 });
@@ -56,6 +57,7 @@ function EditComponent(props) {
             discountPrice: "",
             button: "",
             bgColor: "#ffffff",
+            features: ["free"]
         };
         setAttributes({ cards: [...attributes.cards, newCard] });
         setSelectedCardIndex(attributes.cards.length); // Select the newly added card
@@ -66,6 +68,29 @@ function EditComponent(props) {
         setAttributes({ cards: updatedCards });
         setSelectedCardIndex(null); // Deselect card if it was removed
     };
+    
+    // /////////////////////////////////
+
+    const addFeature = (index) => {
+        const updatedCards = [...attributes.cards];
+        updatedCards[index].features.push(""); // Add an empty feature string
+        setAttributes({ cards: updatedCards });
+    };
+
+    const removeFeature = (cardIndex, featureIndex) => {
+        const updatedCards = [...attributes.cards];
+        updatedCards[cardIndex].features = updatedCards[cardIndex].features.filter((_, i) => i !== featureIndex);
+        setAttributes({ cards: updatedCards });
+    };
+
+    const handleFeatureChange = (cardIndex, featureIndex, newFeature) => {
+        const updatedCards = [...attributes.cards];
+        updatedCards[cardIndex].features[featureIndex] = newFeature;
+        setAttributes({ cards: updatedCards });
+    };
+
+
+    // /////////////////////////
 
     return (
         <div className="pricing-table-edit-block">
@@ -89,6 +114,7 @@ function EditComponent(props) {
                         <Button variant="primary" onClick={() => removeCard(selectedCardIndex)}>
                             Remove Card
                         </Button>
+
                         <SelectControl
                             label="Icon"
                             value={attributes.cards[selectedCardIndex].icon}
@@ -138,13 +164,34 @@ function EditComponent(props) {
                             value={attributes.cards[selectedCardIndex].button}
                             onChange={(newButton) => handleCardChange({ ...attributes.cards[selectedCardIndex], button: newButton }, selectedCardIndex)}
                         />
+
+                        <PanelBody title="Features" initialOpen={false}>
+                            {attributes.cards[selectedCardIndex].features.map((feature, featureIndex) => (
+                                <div key={featureIndex} className="feature">
+                                    <TextControl
+                                        label={`Feature ${featureIndex + 1}`}
+                                        value={feature}
+                                        onChange={(newFeature) => handleFeatureChange(selectedCardIndex, featureIndex, newFeature)}
+                                    />
+                                    <Button variant="secondary" onClick={() => removeFeature(selectedCardIndex, featureIndex)}>
+                                        Remove Feature
+                                    </Button>
+                                </div>
+                            ))}
+                            <Button variant="primary" onClick={() => addFeature(selectedCardIndex)}>
+                                Add Feature
+                            </Button>
+                        </PanelBody>
+
                         <PanelRow>
                             <ChromePicker
                                 color={attributes.cards[selectedCardIndex].bgColor}
                                 onChangeComplete={(color) => handleCardChange({ ...attributes.cards[selectedCardIndex], bgColor: color.hex }, selectedCardIndex)}
                                 disableAlpha
-                            />
+                                />
                         </PanelRow>
+
+                        
                     </PanelBody>
                 )}
 
@@ -172,6 +219,11 @@ function EditComponent(props) {
                             <span className={`dashicons dashicons-${card.icon}`}></span>
                             <h3>{card.title}</h3>
                             <p>{card.description}</p>
+                            <ul className="card-features">
+                                {card.features.map((feature, featureIndex) => (
+                                    <li key={featureIndex}>{feature}</li>
+                                ))}
+                            </ul>
                             <div className="pricing-table-price">
                                 {card.hasDiscount && card.discountPrice ? (
                                     <>

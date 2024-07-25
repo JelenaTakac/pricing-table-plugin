@@ -20,6 +20,11 @@ function PricingTableFrontend(props) {
                         <span className={`dashicons dashicons-${card.icon}`}></span>
                         <h4>{card.title}</h4>
                         <p>{card.description}</p>
+                        <ul className="card-features">
+                            {card.features.map((feature, featureIndex) => (
+                                <li key={featureIndex}>{feature}</li>
+                            ))}
+                        </ul>
                         <div className="pricing-table-price">
                             {card.hasDiscount && card.discountPrice ? (
                                 <>
