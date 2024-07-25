@@ -1,12 +1,4 @@
 .pricing-table-frontend {
-    padding: 20px;
-    border: 1px solid #ccc;
-
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
     .cards-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

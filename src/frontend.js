@@ -12,13 +12,13 @@ divPricingTable.forEach(block => {
 
 function PricingTableFrontend(props) {
     return (
-        <div className="pricing-table-frontend" style={{ backgroundColor: props.bgColor, textAlign: props.theAlignment }}>
-            <h2>{props.blockTitle}</h2>
+        <div className="pricing-table-frontend" style={{textAlign: props.theAlignment}}>
+            <h3>{props.blockTitle}</h3>
             <div className="cards-container">
                 {props.cards.map((card, index) => (
-                    <div key={index} className="card">
+                    <div key={index} className="card" style={{backgroundColor: card.bgColor}}>
                         <span className={`dashicons dashicons-${card.icon}`}></span>
-                        <h3>{card.title}</h3>
+                        <h4>{card.title}</h4>
                         <p>{card.description}</p>
                         <div className="pricing-table-price">
                             {card.hasDiscount && card.discountPrice ? (

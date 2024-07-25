@@ -2,10 +2,11 @@ import "./index.scss";
 import { InspectorControls, RichText, BlockControls, AlignmentToolbar } from "@wordpress/block-editor";
 import { Button, PanelBody, PanelRow, SelectControl, TextControl, ToggleControl } from "@wordpress/components";
 import { ChromePicker } from "react-color";
+import { useState } from "@wordpress/element";
 
 wp.blocks.registerBlockType('my-plugin/pricing-table', {
     title: 'Pricing Table',
-    icon: 'table-row-after',
+    icon: 'table-col-after',
     category: 'common',
     attributes: {
         blockTitle: { type: "string", default: "Get Your Perfect Edition Plans" },
@@ -21,21 +22,22 @@ wp.blocks.registerBlockType('my-plugin/pricing-table', {
                     hasDiscount: false,
                     discountPrice: "",
                     button: "",
+                    bgColor: "#ebebeb", 
                 },
             ],
         },
-        bgColor: { type: "string", default: "#ebebeb" },
-        theAlignment: { type: "string", default: "center" },
+        theAlignment: { type: "string", default: "" },
     },
     description: "Create your best pricing table.",
     edit: EditComponent,
-    save: function (props) {
+    save: function () {
         return null;
     }
 });
 
 function EditComponent(props) {
     const { attributes, setAttributes } = props;
+    const [selectedCardIndex, setSelectedCardIndex] = useState(null);
 
     const handleCardChange = (newCard, index) => {
         const updatedCards = [...attributes.cards];
@@ -53,31 +55,27 @@ function EditComponent(props) {
             hasDiscount: false,
             discountPrice: "",
             button: "",
+            bgColor: "#ffffff",
         };
         setAttributes({ cards: [...attributes.cards, newCard] });
+        setSelectedCardIndex(attributes.cards.length); // Select the newly added card
     };
 
     const removeCard = (index) => {
         const updatedCards = attributes.cards.filter((card, cardIndex) => cardIndex !== index);
         setAttributes({ cards: updatedCards });
+        setSelectedCardIndex(null); // Deselect card if it was removed
     };
 
     return (
-        <div className="pricing-table-edit-block" style={{ backgroundColor: attributes.bgColor }}>
+        <div className="pricing-table-edit-block">
             <BlockControls>
-                <AlignmentToolbar value={attributes.theAlignment} onChange={(newAlignment) => setAttributes({ theAlignment: newAlignment })} />
+                <AlignmentToolbar
+                    value={attributes.theAlignment}
+                    onChange={(newAlignment) => setAttributes({ theAlignment: newAlignment })}
+                />
             </BlockControls>
             <InspectorControls>
-                <PanelBody title="Background Color" initialOpen={false}>
-                    <PanelRow>
-                        <ChromePicker
-                            color={attributes.bgColor}
-                            onChangeComplete={(color) => setAttributes({ bgColor: color.hex })}
-                            disableAlpha
-                        />
-                    </PanelRow>
-                </PanelBody>
-
                 <PanelBody title="Block Title">
                     <TextControl
                         label="Title"
@@ -86,60 +84,69 @@ function EditComponent(props) {
                     />
                 </PanelBody>
 
-                {attributes.cards.map((card, index) => (
-                    <PanelBody key={index} title={`Card ${index + 1}`} initialOpen={false}>
-                        <Button variant="primary" onClick={() => removeCard(index)}>
+                {selectedCardIndex !== null && attributes.cards[selectedCardIndex] && (
+                    <PanelBody title={`Card ${selectedCardIndex + 1}`} initialOpen={true}>
+                        <Button variant="primary" onClick={() => removeCard(selectedCardIndex)}>
                             Remove Card
                         </Button>
                         <SelectControl
                             label="Icon"
-                            value={card.icon}
+                            value={attributes.cards[selectedCardIndex].icon}
                             options={[
                                 { label: "Smiley", value: "smiley" },
                                 { label: "Heart", value: "heart" },
                                 { label: "Lightbulb", value: "lightbulb" },
+                                { label: "Visibility", value: "visibility" },
+                                { label: "Calendar", value: "calendar" },
                             ]}
-                            onChange={(newIcon) => handleCardChange({ ...card, icon: newIcon }, index)}
+                            onChange={(newIcon) => handleCardChange({ ...attributes.cards[selectedCardIndex], icon: newIcon }, selectedCardIndex)}
                         />
                         <TextControl
                             label="Card Title"
-                            value={card.title}
-                            onChange={(newTitle) => handleCardChange({ ...card, title: newTitle }, index)}
+                            value={attributes.cards[selectedCardIndex].title}
+                            onChange={(newTitle) => handleCardChange({ ...attributes.cards[selectedCardIndex], title: newTitle }, selectedCardIndex)}
                         />
                         <TextControl
                             label="Card Description"
-                            value={card.description}
-                            onChange={(newDescription) => handleCardChange({ ...card, description: newDescription }, index)}
+                            value={attributes.cards[selectedCardIndex].description}
+                            onChange={(newDescription) => handleCardChange({ ...attributes.cards[selectedCardIndex], description: newDescription }, selectedCardIndex)}
                         />
                         <TextControl
                             label="Current Price"
-                            value={card.currentPrice}
-                            onChange={(newPrice) => handleCardChange({ ...card, currentPrice: newPrice }, index)}
+                            value={attributes.cards[selectedCardIndex].currentPrice}
+                            onChange={(newPrice) => handleCardChange({ ...attributes.cards[selectedCardIndex], currentPrice: newPrice }, selectedCardIndex)}
                         />
                         <TextControl
                             label="Currency"
-                            value={card.currency}
-                            onChange={(newCurrency) => handleCardChange({ ...card, currency: newCurrency }, index)}
+                            value={attributes.cards[selectedCardIndex].currency}
+                            onChange={(newCurrency) => handleCardChange({ ...attributes.cards[selectedCardIndex], currency: newCurrency }, selectedCardIndex)}
                         />
                         <ToggleControl
                             label="Has Discount"
-                            checked={card.hasDiscount}
-                            onChange={(newHasDiscount) => handleCardChange({ ...card, hasDiscount: newHasDiscount }, index)}
+                            checked={attributes.cards[selectedCardIndex].hasDiscount}
+                            onChange={(newHasDiscount) => handleCardChange({ ...attributes.cards[selectedCardIndex], hasDiscount: newHasDiscount }, selectedCardIndex)}
                         />
-                        {card.hasDiscount && (
+                        {attributes.cards[selectedCardIndex].hasDiscount && (
                             <TextControl
                                 label="Discount Price"
-                                value={card.discountPrice}
-                                onChange={(newDiscountPrice) => handleCardChange({ ...card, discountPrice: newDiscountPrice }, index)}
+                                value={attributes.cards[selectedCardIndex].discountPrice}
+                                onChange={(newDiscountPrice) => handleCardChange({ ...attributes.cards[selectedCardIndex], discountPrice: newDiscountPrice }, selectedCardIndex)}
                             />
                         )}
                         <TextControl
                             label="Button Text"
-                            value={card.button}
-                            onChange={(newButton) => handleCardChange({ ...card, button: newButton }, index)}
+                            value={attributes.cards[selectedCardIndex].button}
+                            onChange={(newButton) => handleCardChange({ ...attributes.cards[selectedCardIndex], button: newButton }, selectedCardIndex)}
                         />
+                        <PanelRow>
+                            <ChromePicker
+                                color={attributes.cards[selectedCardIndex].bgColor}
+                                onChangeComplete={(color) => handleCardChange({ ...attributes.cards[selectedCardIndex], bgColor: color.hex }, selectedCardIndex)}
+                                disableAlpha
+                            />
+                        </PanelRow>
                     </PanelBody>
-                ))}
+                )}
 
                 <Button variant="primary" onClick={addNewCard}>
                     Add New Card
@@ -156,7 +163,12 @@ function EditComponent(props) {
                 />
                 <div className="cards-container">
                     {attributes.cards.map((card, index) => (
-                        <div key={index} className="card">
+                        <div
+                            key={index}
+                            className={`card ${selectedCardIndex === index ? 'selected' : ''}`}
+                            style={{ backgroundColor: card.bgColor }}
+                            onClick={() => setSelectedCardIndex(index)}
+                        >
                             <span className={`dashicons dashicons-${card.icon}`}></span>
                             <h3>{card.title}</h3>
                             <p>{card.description}</p>

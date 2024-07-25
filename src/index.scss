@@ -1,36 +1,62 @@
 .pricing-table-edit-block {
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid #d6d6d6;
-    background-color: #f1f1f1;
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
 
-    .icon-container {
+    .card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        background: #fff;
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        cursor: pointer;
+
+        &.selected {
+            border: 2px solid #007cba;
+        }
+
+        .dashicons {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            margin: 10px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .pricing-table-price {
+            margin-bottom: 15px;
+
+            .previous-price {
+                text-decoration: line-through;
+                margin-right: 10px;
+            }
+
+            .current-price {
+                font-weight: bold;
+            }
+        }
+
+        .btn {
+            background-color: #007cba;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #006ba1;
+            }
+        }
     }
-
-    .dashicons {
-        font-size: 40px;
-    }
-}
-.dashicons {
-    font-family: "dashicons";
-    display: inline-block;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    line-height: 1;
-    vertical-align: middle;
-    text-align: center;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-.previous-price {
-    text-decoration: line-through;
-    margin-right: 10px;
-}
-
-.current-price {
-    font-weight: bold;
 }
