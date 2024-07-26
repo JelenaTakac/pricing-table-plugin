@@ -11,12 +11,13 @@ divPricingTable.forEach(block => {
 });
 
 function PricingTableFrontend(props) {
+
     return (
         <div className="pricing-table-frontend" style={{textAlign: props.theAlignment}}>
-            <h3>{props.blockTitle}</h3>
+            <h2>{props.blockTitle}</h2>
             <div className="cards-container">
                 {props.cards.map((card, index) => (
-                    <div key={index} className="card" style={{backgroundColor: card.bgColor}}>
+                    <div key={index} className={`card ${index === props.recommendedCardIndex ? 'recommended' : ''}`} style={{backgroundColor: card.bgColor}}>
                         <div className="card-icon"><span className={`dashicons dashicons-${card.icon}`}></span></div>
                         <h4 className="card-title">{card.title}</h4>
                         <p>{card.description}</p>
@@ -34,7 +35,7 @@ function PricingTableFrontend(props) {
                             ) : (
                                 <span className="current-price">{card.currency}{card.currentPrice}</span>
                             )}
-                            <p className="payment-period">Per {card.paymentPeriod}</p>
+                            <p className="payment-period">For {card.paymentPeriod} Months</p>
                         </div>
                         <button className="btn">{card.button}</button>
                     </div>

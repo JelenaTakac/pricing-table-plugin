@@ -2,7 +2,7 @@
     .cards-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
+        gap: 30px;
     }
 
     .card {
@@ -20,9 +20,12 @@
             border: 2px solid #007cba;
         }
 
+        &.recommended {
+            transform: scale(1.1);
+            border: 2px solid #f39c12;
+        }
+
         .dashicons {
-            // font-size: 24px;
-            // margin-bottom: 10px;
             scale: 1.5;
         }
 

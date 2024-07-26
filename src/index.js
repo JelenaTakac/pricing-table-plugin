@@ -2,7 +2,7 @@ import "./index.scss";
 import { InspectorControls, RichText, BlockControls, AlignmentToolbar } from "@wordpress/block-editor";
 import { Button, PanelBody, PanelRow, SelectControl, TextControl, ToggleControl } from "@wordpress/components";
 import { ChromePicker } from "react-color";
-import { useState } from "@wordpress/element";
+import { useState, useEffect } from "@wordpress/element";
 
 wp.blocks.registerBlockType('my-plugin/pricing-table', {
     title: 'Pricing Table',
@@ -29,6 +29,8 @@ wp.blocks.registerBlockType('my-plugin/pricing-table', {
             ],
         },
         theAlignment: { type: "string", default: "" },
+        recommendCard: { type: "boolean", default: false },
+        recommendedCardIndex: { type: "number", default: null }
     },
     description: "Create your best pricing table.",
     edit: EditComponent,
@@ -40,6 +42,7 @@ wp.blocks.registerBlockType('my-plugin/pricing-table', {
 function EditComponent(props) {
     const { attributes, setAttributes } = props;
     const [selectedCardIndex, setSelectedCardIndex] = useState(null);
+    const [recommendedCardIndex, setRecommendedCardIndex] = useState(null);
 
     const handleCardChange = (newCard, index) => {
         const updatedCards = [...attributes.cards];
@@ -59,16 +62,17 @@ function EditComponent(props) {
             discountPrice: "",
             button: "",
             bgColor: "#ebebeb",
-            features: ["Feature 1"]
+            features: ["Feature 1"],
         };
+
         setAttributes({ cards: [...attributes.cards, newCard] });
-        setSelectedCardIndex(attributes.cards.length); // Select the newly added card
+        setSelectedCardIndex(attributes.cards.length); // Selected the newly added card
     };
 
     const removeCard = (index) => {
         const updatedCards = attributes.cards.filter((card, cardIndex) => cardIndex !== index);
         setAttributes({ cards: updatedCards });
-        setSelectedCardIndex(null); // Deselect card if it was removed
+        setSelectedCardIndex(null); // Deselected card if it was removed
     };
     
     const addFeature = (index) => {
@@ -89,6 +93,49 @@ function EditComponent(props) {
         setAttributes({ cards: updatedCards });
     };
 
+    const recommendPriceCard = (pricingCards) => {
+        if (!attributes.recommendCard) return null;
+
+        // Define weights for each criterion
+        const weights = { price: 0.5, features: 0.3, paymentPeriod: 0.2 };
+
+        let maxScoreIndex = null;
+        let maxScore = 0;
+
+        // Calculate score for each card
+        pricingCards.forEach((card, index) => {
+            let score = 0;
+            // score += (parseFloat(card.discountPrice || card.currentPrice) / parseFloat(card.currentPrice)) * weights.price;
+            score += Math.abs(parseFloat(card.currentPrice) - parseFloat(card.discountPrice || card.currentPrice)) * weights.price;
+            score += card.features.length * weights.features;
+            score += parseInt(card.paymentPeriod, 10) * weights.paymentPeriod;
+            console.log(score);
+
+            // Update maxScoreIndex if current card's score is higher than maxScore found so far
+            if (score > maxScore) {
+                maxScore = score;
+                maxScoreIndex = index;
+            }
+        });
+
+        // Return the index of the card with the highest score, or null if no cards
+        return maxScoreIndex !== null ? maxScoreIndex : null;
+    }
+
+    const handleRecommendToggle = () => {
+        setAttributes({ recommendCard: !attributes.recommendCard });
+    };
+
+    useEffect(() => {
+        if (attributes.recommendCard) {
+            const newIndex = recommendPriceCard(attributes.cards);
+            setAttributes({ recommendedCardIndex: newIndex });
+            setRecommendedCardIndex(newIndex);
+        } else {
+            setAttributes({ recommendedCardIndex: null });
+            setRecommendedCardIndex(null);
+        }
+    }, [attributes.cards, attributes.recommendCard]); 
 
     return (
         <div className="pricing-table-edit-block">
@@ -104,6 +151,14 @@ function EditComponent(props) {
                         label="Title"
                         value={attributes.blockTitle}
                         onChange={(newTitle) => setAttributes({ blockTitle: newTitle })}
+                    />
+                </PanelBody>
+
+                <PanelBody title="Recommended Card" initialOpen={false}>
+                    <ToggleControl
+                        label="Recommended Card"
+                        checked={attributes.recommendCard}
+                        onChange={handleRecommendToggle}
                     />
                 </PanelBody>
 
@@ -125,6 +180,7 @@ function EditComponent(props) {
                             ]}
                             onChange={(newIcon) => handleCardChange({ ...attributes.cards[selectedCardIndex], icon: newIcon }, selectedCardIndex)}
                         />
+
                         <TextControl
                             label="Card Title"
                             value={attributes.cards[selectedCardIndex].title}
@@ -201,7 +257,7 @@ function EditComponent(props) {
                                 onChange={(newButton) => handleCardChange({ ...attributes.cards[selectedCardIndex], button: newButton }, selectedCardIndex)}
                             />
                         </PanelBody>
-                        
+
                     </PanelBody>
                 )}
 
@@ -222,7 +278,7 @@ function EditComponent(props) {
                     {attributes.cards.map((card, index) => (
                         <div
                             key={index}
-                            className={`card ${selectedCardIndex === index ? 'selected' : ''}`}
+                            className={`card ${selectedCardIndex === index ? 'selected' : ''} ${index === recommendedCardIndex ? 'recommended' : ''}`}
                             style={{ backgroundColor: card.bgColor }}
                             onClick={() => setSelectedCardIndex(index)}
                         >
@@ -243,7 +299,7 @@ function EditComponent(props) {
                                 ) : (
                                     <span className="current-price">{card.currency}{card.currentPrice}</span>
                                 )}
-                                <p className="payment-period">Per {card.paymentPeriod}</p>
+                                <p className="payment-period">For {card.paymentPeriod} Months</p>
                             </div>
                             <button className="btn">{card.button}</button>
                         </div>
